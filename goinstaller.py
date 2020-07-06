@@ -24,6 +24,9 @@ default=".",
 )
 
 args = parser.parse_args()
+if args.os is None or args.arch is None:
+    print("You need to set --os and --arch")
+    return
 print("OS: ",args.os)
 print("Arch: ",args.arch)
 print("Source: ",args.source)
