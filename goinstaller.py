@@ -26,7 +26,7 @@ default=".",
 args = parser.parse_args()
 if args.os is None or args.arch is None:
     print("You need to set --os and --arch")
-    return
+    os.exit()
 print("OS: ",args.os)
 print("Arch: ",args.arch)
 print("Source: ",args.source)
@@ -71,7 +71,12 @@ for goos,arch in envs.items():
         for val in arch:
             if val not in arch_opt:
                 continue
-            cmd = "cd {};env GOOS={} GOARCH={} go build -o {}/{}_{}".format(
+
+            if goos == "windows":
+                cmd = "cd {};env GOOS={} GOARCH={} go build -o {}/{}_{}.exe".format(
+                args.source,goos,val,args.target,goos,val)
+            else:
+                cmd = "cd {};env GOOS={} GOARCH={} go build -o {}/{}_{}".format(
                 args.source,goos,val,args.target,goos,val)
             if os.system(cmd) != 0:
                 print("Execution failed")
