@@ -37,6 +37,7 @@ print("OS: ",args.os)
 print("Arch: ",args.arch)
 print("Source: ",args.source)
 print("Target: ",args.target)
+print("Strip debug info: ",args.strip)
 # source for the envs- https://golang.org/doc/install/source#environment
 envs = {}
 envs["aix"]=["ppc64"]
