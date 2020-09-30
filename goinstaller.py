@@ -18,9 +18,15 @@ parser.add_argument("--source",
 help="The directory where source source is present",
 default=".",
 )
+
 parser.add_argument("--target",
 help="The target dir where the binary needs to be stored",
 default=".",
+)
+
+parser.add_argument("--strip",
+help="Compress the binary size by stripping the debuggin info",
+default="false",
 )
 
 args = parser.parse_args()
@@ -71,13 +77,15 @@ for goos,arch in envs.items():
         for val in arch:
             if val not in arch_opt:
                 continue
-
+            compile_flag = ""
+            if args.strip:
+                compile_flag='''-ldflags="-s -w"'''
             if goos == "windows":
-                cmd = "cd {};env GOOS={} GOARCH={} go build -o {}/{}_{}.exe".format(
-                args.source,goos,val,args.target,goos,val)
+                cmd = "cd {};env GOOS={} GOARCH={} go build {} -o {}/{}_{}.exe".format(
+                args.source,goos,val,compile_flag,args.target,goos,val)
             else:
-                cmd = "cd {};env GOOS={} GOARCH={} go build -o {}/{}_{}".format(
-                args.source,goos,val,args.target,goos,val)
+                cmd = "cd {};env GOOS={} GOARCH={} go build {} -o {}/{}_{}".format(
+                args.source,goos,val,compile_flag,args.target,goos,val)
             if os.system(cmd) != 0:
                 print("Execution failed")
             else:
