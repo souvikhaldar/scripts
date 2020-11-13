@@ -1,0 +1,24 @@
+#!/usr/bin/sh
+
+echo "-----------------------------------------------------------------------"
+echo "Scanning $1 for available machines, result stored in /tmp/list.txt"
+echo "-----------------------------------------------------------------------"
+sudo nmap -sn -oG /tmp/list.txt $1
+echo "-----------------------------------"
+echo "scanning port 139"
+echo "-----------------------------------"
+for ip in $(cat /tmp/list.txt | grep "Host" | cut -d " " -f 2)
+do
+	echo "------------------------------------------"
+	echo "Checking if port 139 is open"
+	echo "------------------------------------------"
+	sudo nmap -p 139 $ip > /tmp/smb.txt
+	a=$(cat /tmp/smb.txt | grep "139" | cut -d " " -f 2)
+	if [ $a = "open" ]
+	then 
+		echo "Port 139 of $ip is open, executing smb-os-discovery script"
+		sudo nmap --script smb-os-discovery $ip
+	fi
+	#sudo nmap -p 139 $ip| egrep -A 2 "PORT|report"
+	echo "------------------------------------------"
+done | tee os_discovery_$(date +%s).txt
